@@ -20,23 +20,33 @@ public class State : MonoBehaviour
         var tile_size = Math.CalcBounds(tilePrefab).size;
 
         var x = 0f;
+        var y = 0f;
         var margin = 0.1f;
 
+        //y x x x x x x x 
+        //y x x x x x x x 
+        //y x x x x x x x 
+
+        // for each row
         for (int row = 0; row < 7; row++) {
-            for (int column = 0; x < nof_columns; column++) {
+            // for each column, in each row
+            for (int column = 0; column < nof_columns; column++) {
                 var tile = Instantiate(tilePrefab);
                 tile.name = "Tile " + column + "/" + row;
                 tile.transform.parent = grid.transform;
-                tile.transform.position = new Vector3(x, 0, 0);
+                tile.transform.position = new Vector3(x, y, 0);
 
                 // set pos of tile
                 x += tile_size.x + margin;
             }
+
+            // after a row is done, reset x to the far left of the grid
+            x = 0f;
+            y += tile_size.y + margin;
         }
     }
 
     public static State instance;
-
 
     [InitializeOnLoadMethod]
     static void InitOnReload()
@@ -60,6 +70,5 @@ public class State : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
