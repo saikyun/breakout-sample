@@ -8,10 +8,12 @@ public class State : MonoBehaviour
     public GameObject grid;
     public int nof_columns = 10;
     public GameObject tilePrefab;
+    public Ball ballPrefab;
+    public List<Ball> balls = new List<Ball>();
+    public PaddleMovement paddle;
 
-    void Init()
+    void InitGrid()
     {
-        Debug.Log("initing");
 
         if (grid) { Destroy(grid); }
 
@@ -19,9 +21,11 @@ public class State : MonoBehaviour
 
         var tile_size = Math.CalcBounds(tilePrefab).size;
 
-        var x = 0f;
-        var y = 0f;
         var margin = 0.1f;
+        var total_w = (nof_columns * (tile_size.x + margin)) - margin;
+        var start_x = -total_w * 0.5f + (tile_size.x * 0.5f);
+        var x = start_x;
+        var y = 0f;
 
         //y x x x x x x x 
         //y x x x x x x x 
@@ -41,9 +45,31 @@ public class State : MonoBehaviour
             }
 
             // after a row is done, reset x to the far left of the grid
-            x = 0f;
+            x = start_x;
             y += tile_size.y + margin;
         }
+    }
+
+    void CreateBalls()
+    {
+        var b = Instantiate(ballPrefab);
+        b.transform.position = paddle.transform.position + new Vector3(0, 1f, 0);
+        balls.Add(b);
+    }
+
+    public void Init()
+    {
+        Debug.Log("initing");
+        InitGrid();
+
+        foreach (var b in balls)
+        {
+            Destroy(b.gameObject);
+        }
+
+        balls = new List<Ball>();
+
+        CreateBalls();
     }
 
     public static State instance;
@@ -58,17 +84,15 @@ public class State : MonoBehaviour
             instance = FindObjectsOfType<State>()[0];
         }
 
-        instance.Init();
+        if (instance != null)
+        {
+            instance.Init();
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
         Init();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 }
