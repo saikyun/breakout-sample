@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class FollowMouse : MonoBehaviour
 {
-    public GameObject target;
+    public Transform target;
+
+    private SpriteRenderer _renderer;
+    private Camera _camera;
+    private float _radius;
+
+    public void Awake()
+    {
+        _renderer = GetComponent<SpriteRenderer>();
+        _radius = transform.localScale.x * 0.5f;
+        _camera = Camera.main;
+    }
 
     bool CircleCircle(GameObject o1, GameObject o2)
     {
@@ -18,7 +29,7 @@ public class FollowMouse : MonoBehaviour
     {
         var mp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(mp.x, mp.y, 0);
-        if (CircleCircle(gameObject, target))
+        if (CollisionCheck(transform.position, _radius, target))
         {
             GetComponent<SpriteRenderer>().color = Color.red;
         }
@@ -26,5 +37,16 @@ public class FollowMouse : MonoBehaviour
         {
             GetComponent<SpriteRenderer>().color = Color.white;
         }
+    }
+
+    public bool CollisionCheck(Vector3 vector, float radius, Transform square)
+    {
+        Vector3 sqExtent = square.localScale * 0.5f;
+        bool top = ((vector.y - radius) < (square.position.y + sqExtent.y));
+        bool bottom = ((vector.y + radius) > (square.position.y - sqExtent.y));
+        bool left = ((vector.x + radius) > (square.position.x - sqExtent.x));
+        bool right = ((vector.x - radius) < (square.position.x + sqExtent.x));
+
+        return (top && bottom && left && right);
     }
 }
